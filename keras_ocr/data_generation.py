@@ -145,7 +145,10 @@ def font_supports_alphabet(filepath, alphabet):
     try:
         pil_font = PIL.ImageFont.truetype(filepath)
         for character in alphabet:
-            pil_font.getsize(character)
+            bbox = pil_font.getbbox(character)  # Correct method
+            if not bbox:
+                print(f"Character '{character}' not supported in font {filepath}")
+                return False
     except Exception as e:
         print(f"Failed to use PIL.ImageFont: {filepath} | Error: {e}")
         return False
