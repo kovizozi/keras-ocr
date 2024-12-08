@@ -279,7 +279,7 @@ def build_model(
             weights=[
                 np.zeros((64, 6), dtype="float32"),
                 np.array([[1, 0, 0], [0, 1, 0]], dtype="float32").flatten(),
-            ],
+            ]
         )(locnet_y)
         localization_net = keras.models.Model(inputs=stn_input_layer, outputs=locnet_y)
         x = keras.layers.Lambda(_transform, output_shape=stn_input_output_shape)(
