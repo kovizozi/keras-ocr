@@ -121,20 +121,33 @@ def font_supports_alphabet(filepath, alphabet):
     """
     if alphabet == "":
         return True
-    font = fontTools.ttLib.TTFont(filepath)
-    if not all(
-        any(ord(c) in table.cmap.keys() for table in font["cmap"].tables)
-        for c in alphabet
-    ):  
-        print("Font does not support alphabet cmap",font)
-        return False
-    font = PIL.ImageFont.truetype(filepath)
+      # Load the font using fontTools
     try:
+        font = fontTools.ttLib.TTFont(filepath)
+        print(f"Loaded font: {filepath}")
+    except Exception as e:
+        print(f"Failed to load font with fontTools: {filepath} | Error: {e}")
+        return False
+    # Check CMAP tables
+    try:
+        supported_chars = set(
+            c for table in font["cmap"].tables for c in table.cmap.keys()
+        )
+        unsupported_chars = [c for c in alphabet if ord(c) not in supported_chars]
+        if unsupported_chars:
+            print(f"Unsupported chars in {filepath}: {unsupported_chars}")
+            return False
+    except Exception as e:
+        print(f"Error checking CMAP in fontTools: {filepath} | Error: {e}")
+        return False
+    
+    # Load the font using PIL
+    try:
+        pil_font = PIL.ImageFont.truetype(filepath)
         for character in alphabet:
-            font.getsize(character)
-    # pylint: disable=bare-except
-    except:
-        print("Font does not support in pill true type", font)
+            pil_font.getsize(character)
+    except Exception as e:
+        print(f"Failed to use PIL.ImageFont: {filepath} | Error: {e}")
         return False
     return True
 
