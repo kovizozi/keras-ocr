@@ -126,7 +126,7 @@ def font_supports_alphabet(filepath, alphabet):
         any(ord(c) in table.cmap.keys() for table in font["cmap"].tables)
         for c in alphabet
     ):  
-        print("Font does not support alphabet cmap",font.name)
+        print("Font does not support alphabet cmap",font)
         return False
     font = PIL.ImageFont.truetype(filepath)
     try:
@@ -134,7 +134,7 @@ def font_supports_alphabet(filepath, alphabet):
             font.getsize(character)
     # pylint: disable=bare-except
     except:
-        print("Font does not support in pill true type", font.name)
+        print("Font does not support in pill true type", font)
         return False
     return True
 
