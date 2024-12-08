@@ -270,14 +270,14 @@ def build_model(
         locnet_y = keras.layers.Conv2D(32, (5, 5), padding="same", activation="relu")(locnet_y)
         locnet_y = keras.layers.Flatten()(locnet_y)
         locnet_y = keras.layers.Dense(64, activation="relu")(locnet_y)
-        locnet_y_output = keras.layers.Dense(6)(locnet_y)
-
-        localization_net = keras.models.Model(inputs=stn_input_layer, outputs=locnet_y_output)
-        localization_net.set_weights([
-            np.zeros((64, 6), dtype="float32"),
-            np.array([[1, 0, 0], [0, 1, 0]], dtype="float32").flatten()
-        ])
-
+        dense_layer = keras.layers.Dense(6)
+        locnet_y = dense_layer(locnet_y)
+        initial_weights = np.zeros((64, 6), dtype="float32")
+        initial_biases = np.array([[1, 0, 0], [0, 1, 0]], dtype="float32").flatten()
+        if initial_biases.shape[0] != 6:
+            initial_biases = np.concatenate((initial_biases, np.zeros(6 - initial_biases.shape[0])))
+        dense_layer.set_weights([initial_weights, initial_biases])
+        localization_net = keras.models.Model(inputs=stn_input_layer, outputs=locnet_y)
         x = keras.layers.Lambda(_transform, output_shape=stn_input_output_shape)(
             [x, localization_net(x)]
         )
