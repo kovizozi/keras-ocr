@@ -264,7 +264,7 @@ def get_fonts(
     if alphabet != "":
         font_filepaths = [
             filepath
-            for filepath in tqdm.tqdm(font_filepaths, desc="Filtering fonts.")
+            for filepath in tqdm.tqdm(font_filepaths, desc="Filtering fonts. from")
             if font_supports_alphabet(filepath=filepath, alphabet=alphabet)
         ]
     return font_filepaths
