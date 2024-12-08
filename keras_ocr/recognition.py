@@ -266,21 +266,18 @@ def build_model(
             filters[6],
         )
         stn_input_layer = keras.layers.Input(shape=stn_input_output_shape)
-        locnet_y = keras.layers.Conv2D(16, (5, 5), padding="same", activation="relu")(
-            stn_input_layer
-        )
-        locnet_y = keras.layers.Conv2D(32, (5, 5), padding="same", activation="relu")(
-            locnet_y
-        )
+        locnet_y = keras.layers.Conv2D(16, (5, 5), padding="same", activation="relu")(stn_input_layer)
+        locnet_y = keras.layers.Conv2D(32, (5, 5), padding="same", activation="relu")(locnet_y)
         locnet_y = keras.layers.Flatten()(locnet_y)
         locnet_y = keras.layers.Dense(64, activation="relu")(locnet_y)
-        locnet_y = keras.layers.Dense(6)
-        locnet_y_output = locnet_y
+        locnet_y_output = keras.layers.Dense(6)(locnet_y)
+
+        localization_net = keras.models.Model(inputs=stn_input_layer, outputs=locnet_y_output)
         localization_net.set_weights([
             np.zeros((64, 6), dtype="float32"),
             np.array([[1, 0, 0], [0, 1, 0]], dtype="float32").flatten()
         ])
-        localization_net = keras.models.Model(inputs=stn_input_layer, outputs=locnet_y_output)
+
         x = keras.layers.Lambda(_transform, output_shape=stn_input_output_shape)(
             [x, localization_net(x)]
         )
