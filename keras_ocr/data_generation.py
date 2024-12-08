@@ -262,6 +262,9 @@ def get_fonts(
                 if os.path.join(*filepath.split(os.sep)[-2:]) not in smallcaps_fonts
             ]
     if alphabet != "":
+        for filepath in font_filepaths[:10]:  # Limit output for readability
+            supports = font_supports_alphabet(filepath=filepath, alphabet=alphabet)
+            print(f"Font: {filepath} | Supports Alphabet: {supports}")
         font_filepaths = [
             filepath
             for filepath in tqdm.tqdm(font_filepaths, desc="Filtering fonts. from")
